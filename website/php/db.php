@@ -19,7 +19,7 @@ $DB_TIMEDIFF = 100*60*24;
 /*
  * Sends a request to database
 */
-function sql_query($sql){
+function sql_query($sql){	
 	global $SQL_HOST;
 	global $SQL_USR;
 	global $SQL_PW;
@@ -127,7 +127,7 @@ function addRating($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian,
 		// create db request
 		$mealID = getMealID($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
 		$date = new DateTime();
-		$sql = "INSERT INTO $DB_RATINGS(rating, date, hash, comment, meals_idmeals) VALUES($rating, NOW(), $hash, '$comment', $mealID)";
+		$sql = "INSERT INTO $DB_RATINGS(rating, date, hash, comment, meals_idmeals) VALUES($rating, NOW(), '$hash', '$comment', $mealID)";
 
 		// add rating
 		if( !sql_query($sql) )

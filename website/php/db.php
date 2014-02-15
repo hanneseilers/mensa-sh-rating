@@ -3,9 +3,9 @@
 	include("err.php");
 
 	$SQL_HOST = "localhost";
-   $SQL_DB = "35110m24661_2";
+   $SQL_DB = "mensa_sh_rating";
    $SQL_USR = "root";
-   $SQL_PW = "t3aMmtlR";
+   $SQL_PW = "root";
 
    $DB_HANDLER = null;
 

@@ -3,7 +3,7 @@
 /*
  * MENSA SH API
 * author: Hannes Eilers
-* version: 0.0.1-alpha
+* version: 1.0.0
 *
 * Parameters
 * f			Function to call.

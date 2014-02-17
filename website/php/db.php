@@ -121,21 +121,26 @@ function addMeal($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc){
 function addRating($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment){
 	global $DB_RATINGS;
 	global $ERR;
+	global $OK;
 
 	if( !checkForRating($loc, $mensa, $meal, $hash, $pig, $cow, $vegetarian, $vegan, $alc) ){
 
 		// create db request
 		$mealID = getMealID($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
+		
 		$date = new DateTime();
 		$sql = "INSERT INTO $DB_RATINGS(rating, date, hash, comment, meals_idmeals) VALUES($rating, NOW(), '$hash', '$comment', $mealID)";
 
 		// add rating
-		if( !sql_query($sql) )
+		if( !sql_query($sql) ){
 			die($ERR);
+		}
 
 	} else{
 		die($ERR);
 	}
+	
+	return $OK;
 
 }
 
@@ -174,7 +179,7 @@ function getRating($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc){
 	if( $res && mysqli_num_rows($res) > 0 )
 		return mysqli_fetch_assoc($res)['avg'];
 	else
-		die($NOTFOUND);
+		return($NOTFOUND);
 }
 
 /*

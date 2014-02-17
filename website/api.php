@@ -6,25 +6,27 @@
 * version: 0.0.1-alpha
 *
 * Parameters
-* f		Function to call.
+* f			Function to call.
 *			f=getRating recieves rating
 *			f=addRating adds rating
 *			f=getComments returns list of comments
+*			f=getRatingQuery returns list of ratings
 * loc		Name of city (location) of mensa
-* mensa	Name of mensa
-* meal	Title/name of meal
-* rating Rating value of meal
-* hash	Hash value of client that sends rating
+* mensa		Name of mensa
+* meal		Title/name of meal
+* rating 	Rating value of meal
+* hash		Hash value of client that sends rating
 * com		Comment/text for rating
 * pig		pig=1 if meal includes pig
 * cow		pig=1 if meal includes cow
-* vege	vege=1 if meal is vegetarian
-* vega	vega=1 if meal is vegan
+* vege		vege=1 if meal is vegetarian
+* vega		vega=1 if meal is vegan
 * alc		alc=1 if meal includes alcohol
+* query		query of meal names to get ratings for
 *
 * Return values
 * ok				If adding rating was successfull
-* |			  	Seperates values
+* |			  		Seperates values
 * err				If an error occured. That can happen
 *		  			due to problems with database connection
 *					or invalid/missing parameters
@@ -33,6 +35,7 @@
 
 include('php/db.php');
 include('php/err.php');
+include('php/query.php');
 
 # Call process function
 processURLParameter();
@@ -105,23 +108,57 @@ function processURLParameter(){
 		$alc = $_GET['alc'];
 	else
 		$alc = 0;
+	
+	if( isset($_GET['query']) )
+		$query = $_GET['query'];
+	else
+		$query = null;
+	
+	// process function
+	processFunction($f, $loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment, $query);
 
+}
+
+function processFunction($f, $loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment, $query){
+	
+	global $ERR;
+	global $NOTFOUND;
+	global $OK;
+	
+	$ret = $ERR;
+	
 	switch($f){
 		case "addRating":
-			addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
+			$ret = addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
 			break;
 
 		case "getRating":
-			getRatingFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
+			$ret = getRatingFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
 			break;
 
 		case "getComments":
-			getCommentsFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
+			$ret = getCommentsFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
+			break;
+			
+		case "getRatingQuery":
+			$ret = processRatingQuery($loc, $mensa, $query);
 			break;
 
 		default:
-			echo( $ERR );
-
+			$ret = $ERR;
+	}
+	
+	if( !$ret || $ret == $ERR ){
+		echo( "$ERR" );
+	}
+	elseif( $ret == $NOTFOUND ) {
+		echo( "$NOTFOUND" );
+	}
+	elseif( $ret == $OK ){
+		echo "$ret";
+	}
+	else{
+		echo "$OK$ret";
 	}
 
 }
@@ -135,22 +172,21 @@ function addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetar
 
 	if( checkMealParameter($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc) &&
 	$rating != null && $hash != null ){
-
+		
 		// every parameter needed is present
 		$mealID = getMealID($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
 		if( $mealID != null ){
-			// meal already available > add rating
-			addRating($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
-			echo( $OK );
+			// meal already available > add rating	
+			return addRating($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
 
 		} else{
 			// meal not available > add meal
 			addMeal($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
-			addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
+			return addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
 		}
 
 	} else{
-		die($ERR);
+		return($ERR);
 	}
 }
 
@@ -166,10 +202,10 @@ function getRatingFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $
 
 		// every parameter needed is present
 		$rating = getRating($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
-		echo( "$OK$SEPERATOR$rating" );
+		return "$SEPERATOR$rating" ;
 
 	} else{
-		die($ERR);
+		return($ERR);
 	}
 }
 
@@ -186,13 +222,15 @@ function getCommentsFromDB($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan,
 
 		// every parameter needed is present
 		$comments = getComments($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
-		echo( "$OK" );
+		$ret = "";
 
 		foreach($comments as $comment)
-			echo( "$SEPERATOR$comment" );
+			$ret += "$SEPERATOR$comment";
+		
+		return $ret;
 
 	} else{
-		die($ERR);
+		return($ERR);
 	}
 }
 

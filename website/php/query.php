@@ -1,7 +1,5 @@
 <?php
 
-include ('db.php');
-
 function processRatingQuery($loc, $mensa, $query){
 	
 	global $ERR;

@@ -33,6 +33,9 @@
 * nf				Meal not found
 */
 
+// ACTIVATE FOR DEBUGGING ONLY!
+// ini_set('display_errors','on');
+
 include('php/db.php');
 include('php/err.php');
 include('php/query.php');

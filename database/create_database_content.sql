@@ -17,5 +17,5 @@ INSERT INTO `mensen` (`idmensen`, `name`, `locations_idlocations`) VALUES
 (8, 'Mensa-Gaarden', 3),
 (9, 'Schwentine-Mensa', 3),
 (10, 'Mensa', 4),
-(11, 'Mensa Osterrönfeld', 5),
+(11, 'Mensa Osterroenfeld', 5),
 (12, 'Mensa und Cafeteria Wedel', 6);

@@ -31,6 +31,7 @@ function sql_query($sql){
 	// connect to database
 	if( $DB_HANDLER == null ){
 		$DB_HANDLER = mysqli_connect( $SQL_HOST, $SQL_USR, $SQL_PW, $SQL_DB);
+		
 		if( mysqli_connect_errno() )
 			die($ERR);
 	}
@@ -109,7 +110,6 @@ function addMeal($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc){
 	$locID = getLocationID($loc);
 	$mensaID = getMensaID($loc, $mensa);
 	$sql = "INSERT INTO $DB_MEALS(name, pig, cow, vegetarian, vegan, alc, mensen_idmensen, mensen_locations_idlocations) VALUES('$meal', $pig, $cow, $vegetarian, $vegan, $alc, $mensaID, $locID)";
-
 	// add meal
 	if( !sql_query($sql) )
 		die($ERR);

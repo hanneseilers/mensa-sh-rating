@@ -179,7 +179,7 @@ function addRatingToDB($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetar
 		// every parameter needed is present
 		$mealID = getMealID($loc, $mensa, $meal, $pig, $cow, $vegetarian, $vegan, $alc);
 		if( $mealID != null ){
-			// meal already available > add rating	
+			// meal already available > add rating
 			return addRating($loc, $mensa, $meal, $rating, $hash, $pig, $cow, $vegetarian, $vegan, $alc, $comment);
 
 		} else{
